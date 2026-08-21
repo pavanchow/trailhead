@@ -51,7 +51,7 @@ impl Index {
         for (term, term_freq) in counts {
             self.postings
                 .entry(term)
-                .or_insert_with(Vec::new)
+                .or_default()
                 .push(Posting { doc_id, term_freq });
         }
     }
