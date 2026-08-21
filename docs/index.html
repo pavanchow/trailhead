@@ -2,11 +2,325 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>trailhead</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trailhead: a full-text search engine in Rust</title>
+<meta name="description" content="Trailhead is a full-text search engine in Rust built from scratch, with an inverted index and TF-IDF ranking you can read end to end.">
+<meta name="author" content="Pavan Nallamothu">
+<link rel="canonical" href="https://pavanchow.github.io/trailhead/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Trailhead: a full-text search engine in Rust">
+<meta property="og:description" content="A full-text search engine in Rust with an inverted index and TF-IDF ranking, small enough to read end to end.">
+<meta property="og:url" content="https://pavanchow.github.io/trailhead/">
+<meta property="og:site_name" content="Trailhead">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Trailhead: a full-text search engine in Rust">
+<meta name="twitter:description" content="A full-text search engine in Rust with an inverted index and TF-IDF ranking, small enough to read end to end.">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Trailhead",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Cross-platform",
+  "description": "A full-text search engine in Rust with an inverted index and TF-IDF ranking, indexing a folder of text files and querying it from the CLI.",
+  "author": {
+    "@type": "Person",
+    "name": "Pavan Nallamothu"
+  },
+  "url": "https://pavanchow.github.io/trailhead/",
+  "programmingLanguage": "Rust"
+}
+</script>
+
+<style>
+  :root {
+    --ink: #1d1d1f;
+    --sub: #6e6e73;
+    --line: #d2d2d7;
+    --bg: #ffffff;
+    --panel: #f5f5f7;
+    --accent: #0071e3;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  }
+  .wrap {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  header.hero {
+    text-align: center;
+    padding: 96px 24px 64px;
+    border-bottom: 1px solid var(--line);
+  }
+  header.hero h1 {
+    font-size: 48px;
+    line-height: 1.1;
+    margin: 0 0 16px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  header.hero p.tagline {
+    font-size: 21px;
+    color: var(--sub);
+    margin: 0 auto;
+    max-width: 620px;
+    line-height: 1.4;
+  }
+  nav.pills {
+    margin-top: 32px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  nav.pills a {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 980px;
+    background: var(--ink);
+    color: #fff;
+    text-decoration: none;
+    font-size: 15px;
+  }
+  nav.pills a.secondary {
+    background: var(--panel);
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  section {
+    padding: 64px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section h2 {
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0 0 24px;
+    text-align: center;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  .card {
+    background: var(--panel);
+    border-radius: 18px;
+    padding: 28px;
+  }
+  .card h3 {
+    margin: 0 0 8px;
+    font-size: 19px;
+  }
+  .card p {
+    margin: 0;
+    color: var(--sub);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  pre {
+    background: var(--panel);
+    border-radius: 14px;
+    padding: 20px 24px;
+    overflow-x: auto;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  code {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+  }
+  .demo {
+    background: var(--panel);
+    border-radius: 18px;
+    padding: 28px;
+  }
+  .demo input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    margin-bottom: 16px;
+    background: #fff;
+  }
+  .demo ol {
+    padding-left: 20px;
+    margin: 0;
+  }
+  .demo li {
+    margin-bottom: 10px;
+    font-size: 15px;
+  }
+  .demo .score {
+    color: var(--sub);
+    font-size: 13px;
+  }
+  footer {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--sub);
+    font-size: 14px;
+  }
+  footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+</style>
 </head>
 <body>
-<h1>trailhead</h1>
-<p>Site coming soon.</p>
-<p><a href="https://github.com/pavanchow/trailhead">View repository</a></p>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Trailhead</h1>
+    <p class="tagline">A full-text search engine in Rust, built from scratch and small enough to read end to end. Tokenizer, inverted index, TF-IDF ranking, no black box.</p>
+    <nav class="pills">
+      <a href="#demo">Try the demo</a>
+      <a class="secondary" href="#usage">Usage</a>
+    </nav>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>What it does</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Tokenizer</h3>
+        <p>Lowercases text, splits on non-alphanumeric characters, and optionally filters a small stopword list.</p>
+      </div>
+      <div class="card">
+        <h3>Inverted index</h3>
+        <p>Maps each term to the documents it appears in, with per-document term counts, so lookups skip everything that does not match.</p>
+      </div>
+      <div class="card">
+        <h3>TF-IDF ranking</h3>
+        <p>Scores documents by term frequency times inverse document frequency, so rare and repeated terms carry more weight.</p>
+      </div>
+      <div class="card">
+        <h3>Simple CLI</h3>
+        <p>Two commands: index a directory of text files, then search it with a ranked top-N list of results.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="usage">
+  <div class="wrap">
+    <h2>Usage</h2>
+    <pre><code>trailhead index ./my-notes
+trailhead search "inverted index ranking" --top 5</code></pre>
+    <p style="text-align:center; color:var(--sub); font-size:15px;">The index is saved as plain JSON so you can open it and see exactly what got indexed.</p>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="wrap">
+    <h2>Try a mini search demo</h2>
+    <div class="demo">
+      <input id="q" type="text" placeholder="Search a tiny built-in corpus, e.g. 'fox' or 'search ranking'" autocomplete="off">
+      <ol id="results"><li class="score">Type something above.</li></ol>
+    </div>
+  </div>
+</section>
+
+<noscript>
+  <section>
+    <div class="wrap">
+      <h2>About Trailhead</h2>
+      <p>Trailhead is a full-text search engine in Rust. It tokenizes a folder of text files, builds an inverted index mapping each term to the documents that contain it, and ranks search results with TF-IDF: term frequency times inverse document frequency. The CLI has two commands, <code>trailhead index &lt;dir&gt;</code> to build the index and <code>trailhead search "&lt;query&gt;" --top 5</code> to query it. The interactive demo above needs JavaScript, but the underlying engine does not, it is a plain Rust binary.</p>
+    </div>
+  </section>
+</noscript>
+
+<footer>
+  <p>By Pavan Nallamothu.</p>
+</footer>
+
+<script>
+(function () {
+  var corpus = [
+    { path: "fox.txt", text: "the quick brown fox jumps over the lazy dog foxes are quick" },
+    { path: "rust.txt", text: "rust is a systems programming language focused on safety and speed" },
+    { path: "search.txt", text: "search engines rank documents using term frequency and inverse document frequency" },
+    { path: "index.txt", text: "an inverted index maps each term to the documents that contain it" }
+  ];
+  var stopwords = ["a","an","and","are","as","at","be","by","for","from","has","he","in","is","it","its","of","on","that","the","to","was","were","will","with"];
+
+  function tokenize(text, filterStop) {
+    var raw = text.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+    if (!filterStop) return raw;
+    return raw.filter(function (t) { return stopwords.indexOf(t) === -1; });
+  }
+
+  var docs = corpus.map(function (d) {
+    var tokens = tokenize(d.text, true);
+    var counts = {};
+    tokens.forEach(function (t) { counts[t] = (counts[t] || 0) + 1; });
+    return { path: d.path, tokenCount: tokens.length, counts: counts };
+  });
+
+  function docFrequency(term) {
+    return docs.filter(function (d) { return d.counts[term]; }).length;
+  }
+
+  function idf(term) {
+    var n = docs.length, df = docFrequency(term);
+    if (df === 0) return 0;
+    return Math.log(n / df);
+  }
+
+  function search(query, topN) {
+    var terms = tokenize(query, true);
+    var scores = {};
+    docs.forEach(function (d, i) {
+      var score = 0;
+      terms.forEach(function (t) {
+        var tf = (d.counts[t] || 0) / Math.max(d.tokenCount, 1);
+        score += tf * idf(t);
+      });
+      if (score > 0) scores[i] = score;
+    });
+    return Object.keys(scores)
+      .map(function (i) { return { path: docs[i].path, score: scores[i] }; })
+      .sort(function (a, b) { return b.score - a.score; })
+      .slice(0, topN);
+  }
+
+  var input = document.getElementById("q");
+  var results = document.getElementById("results");
+
+  function render() {
+    var query = input.value.trim();
+    results.innerHTML = "";
+    if (!query) {
+      results.innerHTML = "<li class=\"score\">Type something above.</li>";
+      return;
+    }
+    var hits = search(query, 5);
+    if (hits.length === 0) {
+      results.innerHTML = "<li class=\"score\">No results.</li>";
+      return;
+    }
+    hits.forEach(function (h) {
+      var li = document.createElement("li");
+      li.innerHTML = h.path + " <span class=\"score\">(score: " + h.score.toFixed(4) + ")</span>";
+      results.appendChild(li);
+    });
+  }
+
+  input.addEventListener("input", render);
+})();
+</script>
+
 </body>
 </html>
