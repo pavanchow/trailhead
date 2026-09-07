@@ -6,6 +6,7 @@
 <title>Trailhead: a full-text search engine in Rust</title>
 <meta name="description" content="Trailhead is a full-text search engine in Rust built from scratch, with an inverted index and TF-IDF ranking you can read end to end.">
 <meta name="author" content="Pavan Nallamothu (pavanchow)">
+<meta name="keywords" content="full-text search engine, search engine in Rust, inverted index, TF-IDF, term frequency, inverse document frequency, tokenizer, ranking, from scratch, Pavan Nallamothu, pavanchow">
 <link rel="canonical" href="https://pavanchow.github.io/trailhead/">
 <link rel="icon" type="image/svg+xml" href="logo.svg">
 
@@ -26,6 +27,7 @@
   "name": "Trailhead",
   "applicationCategory": "DeveloperApplication",
   "operatingSystem": "Cross-platform",
+  "softwareVersion": "0.1.0",
   "description": "A full-text search engine in Rust with an inverted index and TF-IDF ranking, indexing a folder of text files and querying it from the CLI.",
   "author": {
     "@type": "Person",
@@ -56,6 +58,7 @@
   nav .brand .gem{width:16px;height:16px;transform:rotate(45deg);border-radius:3px;background:linear-gradient(135deg,#4fcf9f,#0f7a5c)}
   nav .links{display:flex;gap:26px;align-items:center}
   nav .links a{color:var(--ink);font-size:14.5px}
+  nav .v{color:var(--faint);font-family:var(--mono);font-size:12px}
   @media(max-width:640px){nav .links a:not(.gh){display:none}}
 
   .hero{padding:70px 0 30px;text-align:center}
@@ -89,6 +92,18 @@
   pre{background:#15161c;color:#ececf4;border-radius:14px;padding:20px 22px;font-family:var(--mono);font-size:13.5px;overflow-x:auto;max-width:640px;margin:40px auto 0}
   footer{padding:64px 0;border-top:1px solid var(--line);text-align:center;color:var(--muted)}
   footer .name{color:var(--ink);font-weight:600}
+  .term{max-width:640px;margin:40px auto 0;background:#15161c;border:1px solid #2a2b34;border-radius:14px;overflow:hidden}
+  .term .tbar{display:flex;gap:7px;padding:12px 16px;border-bottom:1px solid #24252e}
+  .term .tbar i{width:11px;height:11px;border-radius:50%;background:#33343f}
+  .term pre{background:transparent;margin:0;border-radius:0;max-width:none;color:#ececf4;padding:18px 20px;font-size:13px;line-height:1.65}
+  .term .p{color:#4fcf9f}
+  .term .hot{color:#8fe3c4;font-weight:600}
+  .rows{max-width:760px;margin:44px auto 0}
+  .rows .r{display:grid;grid-template-columns:minmax(140px,1fr) 2fr;gap:14px 38px;padding:24px 0;border-top:1px solid var(--line)}
+  .rows .r:first-child{border-top:none}
+  .rows .r b{font-size:18px}.rows .r p{color:var(--muted)}
+  .rows .r code{font-family:var(--mono);font-size:13px;background:var(--panel);padding:1px 5px;border-radius:5px}
+  @media(max-width:640px){.rows .r{grid-template-columns:1fr;gap:6px}}
 </style>
 <link rel="author" href="https://github.com/pavanchow">
 <script type="application/ld+json">
@@ -99,7 +114,9 @@
   <nav><div class="row">
     <div class="brand"><img src="logo.svg" class="brandlogo" alt="" width="22" height="22">Trailhead</div>
     <div class="links">
-      <a href="#demo">Demo</a><a href="#how">How it works</a><a href="#usage">Usage</a>
+      <a href="#demo">Demo</a><a href="#how">How it works</a><a href="#built">Design</a><a href="#usage">Usage</a>
+      <a class="gh" href="https://github.com/pavanchow/trailhead">GitHub</a>
+      <span class="v">v0.1.0</span>
     </div>
   </div></nav>
 
@@ -154,11 +171,33 @@
     </div>
   </section>
 
+  <section id="built">
+    <h2>Why it looks the way it does</h2>
+    <p class="lead">No external search service and no dependency on a search library. Every choice keeps the pipeline small enough to read end to end.</p>
+    <div class="rows">
+      <div class="r"><b>From scratch</b><p>The tokenizer, inverted index, and TF-IDF scorer are all written in a few hundred lines of Rust. Nothing hides behind a black-box search crate, so you can follow a query from raw text to a ranked list.</p></div>
+      <div class="r"><b>TF-IDF, not just matching</b><p>Ranking is term frequency times inverse document frequency, summed over the query. IDF is <code>ln(N / df)</code>, so a rare term outweighs a common one and a short document outranks a long one on the same match count.</p></div>
+      <div class="r"><b>Readable JSON index</b><p>The index serializes to plain JSON with serde. It is not the most compact format, but you can open the file and see exactly which term points to which document.</p></div>
+      <div class="r"><b>Deterministic tests</b><p>The suite covers the tokenizer and the index: exact-match queries, TF-IDF ordering, absent terms, multi-term score combination, and a save and load round trip.</p></div>
+    </div>
+  </section>
+
   <section id="usage">
     <h2>Index it. Search it.</h2>
-    <p class="lead">The index is saved as plain JSON so you can open it and see exactly what got indexed.</p>
-    <pre>trailhead index ./my-notes
-trailhead search "inverted index ranking" --top 5</pre>
+    <p class="lead">Two commands. Build the index over a directory of text files, then query it with a ranked top-N list.</p>
+    <div class="rows">
+      <div class="r"><b>Index</b><p><code>trailhead index &lt;dir&gt;</code> tokenizes every <code>.txt</code> and <code>.md</code> file under a directory and writes <code>trailhead.index.json</code> in the current directory.</p></div>
+      <div class="r"><b>Search</b><p><code>trailhead search "&lt;query&gt;" --top N</code> loads the index and prints the top-N documents by TF-IDF score, highest first.</p></div>
+    </div>
+    <div class="term">
+      <div class="tbar"><i></i><i></i><i></i></div>
+<pre><span class="p">$</span> trailhead index ./notes
+indexed 4 document(s) with 30 unique term(s), saved to trailhead.index.json
+<span class="p">$</span> trailhead search "inverted index ranking" --top 5
+1. ./notes/index.md  <span class="hot">(score: 0.3961)</span>
+<span class="p">$</span> trailhead search "document frequency" --top 3
+1. ./notes/search.md  <span class="hot">(score: 0.4159)</span></pre>
+    </div>
   </section>
 
   <noscript>
