@@ -7,6 +7,7 @@
 <meta name="description" content="Trailhead is a full-text search engine in Rust built from scratch, with an inverted index and TF-IDF ranking you can read end to end.">
 <meta name="author" content="Pavan Nallamothu (pavanchow)">
 <link rel="canonical" href="https://pavanchow.github.io/trailhead/">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="Trailhead: a full-text search engine in Rust">
@@ -103,6 +104,7 @@
   </div></nav>
 
   <div id="demo" class="hero">
+    <img src="logo.svg" alt="Trailhead logo" width="72" height="72">
     <p class="eyebrow">Rust · inverted index · TF-IDF</p>
     <h1>Search that shows<br>its own work.</h1>
     <p class="sub">Trailhead is a full-text search engine in Rust, built from scratch and small enough to read end to end. Tokenizer, inverted index, TF-IDF ranking, no black box. Here is the real thing, running in your browser.</p>
@@ -110,6 +112,15 @@
       <a href="#demo-card">Try the demo</a>
       <a class="secondary" href="#usage">Usage</a>
     </nav>
+  </div>
+
+  <div class="wrap">
+    <details style="max-width:640px;margin:0 auto;border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:0 18px;">
+      <summary style="cursor:pointer;padding:15px 0;font-weight:650;color:var(--ink);">How to use this playground</summary>
+      <div style="padding:0 0 16px;color:var(--muted);font-size:15px;line-height:1.6;">
+        Type a query in the search box below. Trailhead tokenizes it, looks each term up in an inverted index built over a small built-in corpus, and ranks the matching documents by TF-IDF, so rare and repeated terms carry more weight. Results update as you type, each line showing the document and its score, highest first. Try a single common word like <code>fox</code>, then a multi-term query like <code>search ranking</code> to watch the scores combine.
+      </div>
+    </details>
   </div>
 
   <div class="stage">

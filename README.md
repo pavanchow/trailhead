@@ -1,3 +1,7 @@
+<img src="docs/logo.svg" alt="Trailhead logo" width="96">
+
+# Trailhead
+
 **A full-text search engine in Rust, built from scratch and small enough to read end to end.**
 
 Trailhead indexes a folder of `.txt` and `.md` files and lets you query it from the command line. No external search service, no black box. The whole pipeline, from tokenizing text to ranking results, lives in a few hundred lines of Rust.
