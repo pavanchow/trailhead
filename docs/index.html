@@ -96,6 +96,19 @@
   .rows .r b{font-size:18px}.rows .r p{color:var(--muted)}
   .rows .r code{font-family:var(--mono);font-size:13px;background:var(--panel);padding:1px 5px;border-radius:5px}
   @media(max-width:640px){.rows .r{grid-template-columns:1fr;gap:6px}}
+
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#e8e8f2;--muted:#9a9db0;--faint:#6f7280;
+      --line:#23232e;--panel:#14141c;--panel2:#14141c;
+    }
+    body{background:#0b0b12}
+    nav{background:rgba(11,11,18,.82);border-bottom-color:var(--line)}
+    nav.pills a{color:#0b0b12}
+    nav.pills a.secondary,nav.pills a.secondary:hover{background:#14141c;color:var(--ink)}
+    .card{background:linear-gradient(180deg,#14141c,#101018)}
+    .card input,.card li:not(.score-only){background:#14141c}
+  }
 </style>
 <link rel="author" href="https://github.com/pavanchow">
 </head>
