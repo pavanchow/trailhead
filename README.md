@@ -6,6 +6,8 @@ Trailhead is a full-text search engine written from scratch in Rust, with an inv
 
 **[Live demo](https://pavanchow.github.io/trailhead/)** · MIT licensed · written in Rust
 
+Built from scratch by [Pavan Nallamothu](https://pavanchow.github.io/) ([LinkedIn](https://www.linkedin.com/in/pavanchow/), [GitHub](https://github.com/pavanchow)).
+
 ## What it is
 
 - A tokenizer that lowercases text and splits it into words, with an optional stopword filter.
